@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
     <org.buddha.wise.media.IjkVideoView
-        android:id="@+id/vedio"
+        android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

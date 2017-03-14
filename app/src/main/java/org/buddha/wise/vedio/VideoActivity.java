@@ -13,14 +13,14 @@ import org.buddha.wise.media.IjkVideoView;
  * Created by Yuan Jiwei on 17/3/14.
  */
 
-public class VedioActivity extends Activity{
+public class VideoActivity extends Activity{
     private IjkVideoView videoView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.vedio);
-        videoView = (IjkVideoView) findViewById(R.id.vedio);
-        videoView.setAspectRatio(IRenderView.AR_ASPECT_FIT_PARENT);
+        setContentView(R.layout.video);
+        videoView = (IjkVideoView) findViewById(R.id.video);
+//        videoView.setAspectRatio(IRenderView.AR_ASPECT_FIT_PARENT);
         videoView.setVideoURI(Uri.parse("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8"));
         videoView.start();
     }
