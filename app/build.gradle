@@ -17,6 +17,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs' /**在libs文件夹下找aar文件*/
+    }
 }
 
 dependencies {
@@ -27,4 +38,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     testCompile 'junit:junit:4.12'
+
+//    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.7.7.1'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.7.7.1'
+    compile(name: 'ijkplayer-java-release', ext: 'aar') /**编译ijkplayer-java-release.aar文件*/
 }
