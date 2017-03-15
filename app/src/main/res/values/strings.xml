@@ -8,4 +8,14 @@
     <string name="VideoView_error_button">VideoView_error_button</string>
     <string name="VideoView_error_text_invalid_progressive_playback">VideoView_error_text_invalid_progressive_playback</string>
     <string name="VideoView_error_text_unknown">VideoView_error_text_unknown</string>
+
+    <string name="vdec">vdec</string>
+    <string name="fps">fps</string>
+    <string name="v_cache">v-cache</string>
+    <string name="a_cache">a-cache</string>
+    <string name="load_cost">load-cost</string>
+    <string name="seek_cost">seek_cost</string>
+    <string name="seek_load_cost">seek_load_cost</string>
+    <string name="tcp_speed">tcp_speed</string>
+    <string name="bit_rate">bit_rate</string>
 </resources>

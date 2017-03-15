@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.buddha.wise">
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -19,7 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".vedio.VideoActivity"
+        <activity
+            android:name=".vedio.VideoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".vedio.TestVideo"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
     </application>
 
