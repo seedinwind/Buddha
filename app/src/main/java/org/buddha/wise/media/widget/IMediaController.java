@@ -1,5 +1,10 @@
 package org.buddha.wise.media.widget;
 
+import android.content.Context;
+import android.net.Uri;
+
+import java.util.Map;
+
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
@@ -8,7 +13,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 public interface IMediaController {
 
-    void setPlayer(IMediaPlayer player);
+    void initPlayer(Context context, Uri uri, Map<String, String> headers);
 
     void prepare();
 
@@ -25,4 +30,6 @@ public interface IMediaController {
     void stop();
 
     void attachView(AbstractControlView controlView);
+
+    void release(boolean b);
 }
