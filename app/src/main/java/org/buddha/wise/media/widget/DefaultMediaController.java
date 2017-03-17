@@ -80,15 +80,20 @@ public class DefaultMediaController implements IMediaController {
 
     private void attachStatusListener() {
         if (mMediaListener != null && mMediaPlayer != null) {
-            mMediaPlayer.setOnPreparedListener(mMediaListener);
-            mMediaPlayer.setOnVideoSizeChangedListener(mMediaListener);
-            mMediaPlayer.setOnCompletionListener(mMediaListener);
-            mMediaPlayer.setOnErrorListener(mMediaListener);
-            mMediaPlayer.setOnInfoListener(mMediaListener);
-            mMediaPlayer.setOnBufferingUpdateListener(mMediaListener);
-            mMediaPlayer.setOnSeekCompleteListener(mMediaListener);
+            IMediaListener mStatusListener = new StatusListener(mMediaListener);
+            mMediaPlayer.setOnPreparedListener(mStatusListener);
+            mMediaPlayer.setOnVideoSizeChangedListener(mStatusListener);
+            mMediaPlayer.setOnCompletionListener(mStatusListener);
+            mMediaPlayer.setOnErrorListener(mStatusListener);
+            mMediaPlayer.setOnInfoListener(mStatusListener);
+            mMediaPlayer.setOnBufferingUpdateListener(mStatusListener);
+            mMediaPlayer.setOnSeekCompleteListener(mStatusListener);
 //            mMediaPlayer.setOnTimedTextListener(mMediaListener);
         }
+    }
+
+    public boolean hasPlayer() {
+        return mMediaPlayer != null;
     }
 
 
@@ -100,12 +105,18 @@ public class DefaultMediaController implements IMediaController {
 
     @Override
     public void start() {
-        mMediaPlayer.start();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.start();
+            mStatus.setCurrentState(Status.STATE_PLAYING);
+        }
     }
 
     @Override
     public void pause() {
-
+        if (mMediaPlayer != null) {
+            mMediaPlayer.pause();
+            mStatus.setCurrentState(Status.STATE_PAUSED);
+        }
     }
 
     @Override
@@ -133,6 +144,15 @@ public class DefaultMediaController implements IMediaController {
         }
     }
 
+    @Override
+    public boolean canStart() {
+        return mStatus.canStart();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mStatus.isPlaying();
+    }
 
     @Override
     public void reset() {
@@ -174,42 +194,42 @@ public class DefaultMediaController implements IMediaController {
 //            case Settings.PV_PLAYER__IjkMediaPlayer:
             default: {
                 IjkMediaPlayer ijkMediaPlayer = new IjkMediaPlayer();
-                ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
-
-//                    if (mSettings.getUsingMediaCodec()) {
-//                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
-//                        if (mSettings.getUsingMediaCodecAutoRotate()) {
-//                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
-//                        } else {
-//                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
-//                        }
-//                        if (mSettings.getMediaCodecHandleResolutionChange()) {
-//                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
-//                        } else {
-//                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 0);
-//                        }
-//                    } else {
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
-//                    }
-
-//                    if (mSettings.getUsingOpenSLES()) {
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
-//                    } else {
-//                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
-//                    }
-
-//                    String pixelFormat = mSettings.getPixelFormat();
-//                    if (TextUtils.isEmpty(pixelFormat)) {
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
-//                    } else {
-//                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
-//                    }
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
+//                ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
+//
+////                    if (mSettings.getUsingMediaCodec()) {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+////                        if (mSettings.getUsingMediaCodecAutoRotate()) {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
+////                        } else {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
+////                        }
+////                        if (mSettings.getMediaCodecHandleResolutionChange()) {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
+////                        } else {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 0);
+////                        }
+////                    } else {
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
+////                    }
+//
+////                    if (mSettings.getUsingOpenSLES()) {
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+////                    } else {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
+////                    }
+//
+////                    String pixelFormat = mSettings.getPixelFormat();
+////                    if (TextUtils.isEmpty(pixelFormat)) {
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+////                    } else {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
+////                    }
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
                 ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
-
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
-
-                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+//
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
+//
+//                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
                 mediaPlayer = ijkMediaPlayer;
             }
             break;
@@ -252,5 +272,59 @@ public class DefaultMediaController implements IMediaController {
         public void setTargetState(int targetState) {
             mTargetState = targetState;
         }
+
+        public boolean canStart() {
+            return mCurrentState == STATE_PREPARED || mCurrentState == STATE_PAUSED;
+        }
+
+        public boolean isPlaying() {
+            return mCurrentState == STATE_PLAYING;
+        }
     }
+
+    class StatusListener extends IMediaListener {
+        private IMediaListener listener;
+
+        public StatusListener(IMediaListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
+            super.onBufferingUpdate(iMediaPlayer, i);
+        }
+
+        @Override
+        public void onCompletion(IMediaPlayer iMediaPlayer) {
+            super.onCompletion(iMediaPlayer);
+        }
+
+        @Override
+        public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
+            return super.onError(iMediaPlayer, i, i1);
+        }
+
+        @Override
+        public boolean onInfo(IMediaPlayer iMediaPlayer, int i, int i1) {
+            return super.onInfo(iMediaPlayer, i, i1);
+        }
+
+        @Override
+        public void onPrepared(IMediaPlayer iMediaPlayer) {
+            mStatus.setCurrentState(Status.STATE_PREPARED);
+            listener.onPrepared(iMediaPlayer);
+        }
+
+        @Override
+        public void onSeekComplete(IMediaPlayer iMediaPlayer) {
+            super.onSeekComplete(iMediaPlayer);
+        }
+
+        @Override
+        public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
+            super.onVideoSizeChanged(iMediaPlayer, i, i1, i2, i3);
+        }
+    }
+
+    ;
 }

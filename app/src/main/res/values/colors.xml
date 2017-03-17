@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="ijk_transparent_dark">#77000000</color>
+    <color name="transparent">#10ffffff</color>
+    <color name="white">#80ffffff</color>
 </resources>

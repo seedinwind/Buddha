@@ -32,4 +32,8 @@ public interface IMediaController {
     void attachView(AbstractControlView controlView);
 
     void release(boolean b);
+
+    boolean canStart();
+
+    boolean isPlaying();
 }

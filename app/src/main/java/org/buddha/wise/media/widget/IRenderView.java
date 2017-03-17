@@ -30,4 +30,10 @@ public interface IRenderView {
 
     SurfaceHolder getSurfaceHolder();
 
+    void setOnTouchListener(SurfaceRenderView.RenderTouchListener listener);
+
+
+    interface RenderTouchListener {
+        void onTouch();
+    }
 }

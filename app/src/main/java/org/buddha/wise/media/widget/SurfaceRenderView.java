@@ -2,6 +2,7 @@ package org.buddha.wise.media.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.view.View;
  */
 
 public class SurfaceRenderView extends SurfaceView implements IRenderView {
+    private RenderTouchListener mToucherListener;
+
     public SurfaceRenderView(Context context) {
         super(context);
     }
@@ -56,5 +59,26 @@ public class SurfaceRenderView extends SurfaceView implements IRenderView {
     @Override
     public SurfaceHolder getSurfaceHolder() {
         return getHolder();
+    }
+
+    @Override
+    public void setOnTouchListener(RenderTouchListener listener) {
+        mToucherListener = listener;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mToucherListener.onTouch();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }

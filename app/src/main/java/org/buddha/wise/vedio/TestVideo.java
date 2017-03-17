@@ -21,7 +21,6 @@ public class TestVideo extends Activity {
         setContentView(R.layout.activity_test_vedio);
         mVideoView = (VideoView) findViewById(R.id.surface);
         mVideoView.setVideoURI(Uri.parse("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8"));
-        mVideoView.start();
     }
 
     @Override

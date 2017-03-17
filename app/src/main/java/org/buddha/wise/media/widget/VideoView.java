@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,7 +29,6 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private IRenderView mRenderView;
     private AbstractControlView mControllerView;
     private Uri mUri;
-    private int mSeekWhenPrepared;
     private Map mHeaders;
 
     public VideoView(@NonNull Context context) {
@@ -55,6 +55,12 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         mRenderView = createRenderView();
         mRenderView.getSurfaceHolder().addCallback(this);
         addView(mRenderView.getView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mRenderView.setOnTouchListener(new IRenderView.RenderTouchListener() {
+            @Override
+            public void onTouch() {
+                mControllerView.show();
+            }
+        });
     }
 
     private IRenderView createRenderView() {
@@ -65,7 +71,7 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private void addDefaultControllerView() {
         ViewGroup v = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.default_control_view, null);
         mControllerView = new DefaultControllerView(v);
-//        addView(mControllerView.getView());
+        addView(mControllerView.getView());
         mControllerView.attachMediaController(mMediaController);
         mControllerView.hide();
     }
@@ -108,7 +114,6 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private void setVideoURI(Uri uri, Map<String, String> headers) {
         mUri = uri;
         mHeaders = headers;
-        mSeekWhenPrepared = 0;
         openVideo();
         requestLayout();
         invalidate();
@@ -129,7 +134,7 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         mMediaController.prepare();
     }
 
-    public void start(){
+    public void start() {
         mMediaController.start();
     }
 
@@ -162,6 +167,7 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         @Override
         public void onPrepared(IMediaPlayer iMediaPlayer) {
             Toast.makeText(getContext(), "onPrepared", Toast.LENGTH_SHORT).show();
+            mControllerView.show();
             super.onPrepared(iMediaPlayer);
         }
 
@@ -178,7 +184,11 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mMediaController.bindRenderView(mRenderView);
+        if (mMediaController.hasPlayer()) {
+            mMediaController.bindRenderView(mRenderView);
+        } else {
+            openVideo();
+        }
     }
 
     @Override
@@ -190,4 +200,5 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
 
     }
+
 }
