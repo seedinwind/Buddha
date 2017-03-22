@@ -1,8 +1,10 @@
 package org.buddha.wise.media.widget;
 
+import android.support.v7.widget.AppCompatSeekBar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 
 import org.buddha.wise.R;
 
@@ -10,9 +12,11 @@ import org.buddha.wise.R;
  * Created by Yuan Jiwei on 17/3/16.
  */
 
-public class DefaultControllerView extends AbstractControlView implements View.OnClickListener {
+public class DefaultControllerView extends AbstractControlView implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    private ImageButton mPlayControl;
+    private ImageButton mTooglePlay;
+    private AppCompatSeekBar mSeek;
+    private int mCurrentProgress;
 
     public DefaultControllerView(ViewGroup v) {
         mRoot = v;
@@ -21,13 +25,20 @@ public class DefaultControllerView extends AbstractControlView implements View.O
 
     @Override
     protected void initViews() {
-        mPlayControl = (ImageButton) mRoot.findViewById(R.id.iv_toggle);
-        mPlayControl.setOnClickListener(this);
+        mTooglePlay = (ImageButton) mRoot.findViewById(R.id.iv_toggle);
+        mTooglePlay.setOnClickListener(this);
+        mSeek = (AppCompatSeekBar) mRoot.findViewById(R.id.seek);
+        mSeek.setOnSeekBarChangeListener(this);
     }
 
     @Override
     void hide() {
         mRoot.setVisibility(View.GONE);
+    }
+
+    @Override
+    void initSeekBar(int max) {
+        mSeek.setMax(max);
     }
 
     @Override
@@ -47,13 +58,24 @@ public class DefaultControllerView extends AbstractControlView implements View.O
 
     @Override
     void show(int timeout) {
-
+        if (timeout <= 0) {
+            timeout = 1000;
+        }
+        show();
+        mRoot.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hide();
+            }
+        }, timeout);
     }
 
     @Override
     void show() {
         mRoot.setVisibility(View.VISIBLE);
+        mSeek.setProgress(mMediaController.getCurrentPosition());
     }
+
 
     @Override
     public void onClick(View v) {
@@ -62,14 +84,42 @@ public class DefaultControllerView extends AbstractControlView implements View.O
                 if (mMediaController != null) {
                     if (mMediaController.canStart()) {
                         mMediaController.start();
-                        mPlayControl.setImageResource(R.mipmap.icon_pause);
-                        hide();
+                        mTooglePlay.setImageResource(R.mipmap.icon_pause);
+                        mRoot.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                hide();
+                            }
+                        }, 500);
+
                     } else if (mMediaController.isPlaying()) {
                         mMediaController.pause();
-                        mPlayControl.setImageResource(R.mipmap.icon_play);
-                        hide();
+                        mTooglePlay.setImageResource(R.mipmap.icon_play);
+                        mRoot.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                hide();
+                            }
+                        }, 500);
                     }
                 }
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            mCurrentProgress = progress;
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mMediaController.seekTo(mCurrentProgress);
     }
 }

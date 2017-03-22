@@ -22,6 +22,8 @@ public abstract class AbstractControlView {
 
     abstract void hide();
 
+    abstract void initSeekBar(int max);
+
     abstract boolean isShowing();
 
     abstract void setAnchorView(View view);

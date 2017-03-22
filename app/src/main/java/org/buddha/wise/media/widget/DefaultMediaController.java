@@ -24,8 +24,10 @@ import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 public class DefaultMediaController implements IMediaController {
     private IMediaPlayer mMediaPlayer = null;
     private IMediaListener mMediaListener;
+    private AbstractControlView mControlView;
     private Context mContext;
     private Status mStatus = new Status();
+    private int mSeekWhenPrepared;
 
     public void setMediaListener(IMediaListener mediaListener) {
         mMediaListener = mediaListener;
@@ -70,8 +72,8 @@ public class DefaultMediaController implements IMediaController {
         } else {
             mMediaPlayer.setDataSource(uri.toString());
         }
-//        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//        mMediaPlayer.setScreenOnWhilePlaying(true);
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer.setScreenOnWhilePlaying(true);
     }
 
     public void bindRenderView(IRenderView renderView) {
@@ -99,34 +101,38 @@ public class DefaultMediaController implements IMediaController {
 
     @Override
     public void prepare() {
-        mMediaPlayer.prepareAsync();
-        mStatus.setCurrentState(Status.STATE_PREPARING);
+            mMediaPlayer.prepareAsync();
+            mStatus.setCurrentState(Status.STATE_PREPARING);
     }
 
     @Override
     public void start() {
-        if (mMediaPlayer != null) {
+        if (mStatus.isInPlaybackState()) {
             mMediaPlayer.start();
             mStatus.setCurrentState(Status.STATE_PLAYING);
         }
+        mStatus.setTargetState(Status.STATE_PLAYING);
     }
 
     @Override
     public void pause() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.pause();
-            mStatus.setCurrentState(Status.STATE_PAUSED);
+        if (mStatus.isInPlaybackState()) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+                mStatus.setCurrentState(Status.STATE_PAUSED);
+            }
         }
+        mStatus.setTargetState(Status.STATE_PAUSED);
     }
 
     @Override
-    public void seekTo() {
-
-    }
-
-    @Override
-    public void release() {
-
+    public void seekTo(int msec) {
+        if (mStatus.isInPlaybackState()) {
+            mMediaPlayer.seekTo(msec);
+            mSeekWhenPrepared = 0;
+        } else {
+            mSeekWhenPrepared = msec;
+        }
     }
 
     public void release(boolean clearTargetStatus) {
@@ -134,7 +140,6 @@ public class DefaultMediaController implements IMediaController {
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            // REMOVED: mPendingSubtitleTracks.clear();
             mStatus.setCurrentState(Status.STATE_IDLE);
             if (clearTargetStatus) {
                 mStatus.setTargetState(Status.STATE_IDLE);
@@ -155,11 +160,6 @@ public class DefaultMediaController implements IMediaController {
     }
 
     @Override
-    public void reset() {
-
-    }
-
-    @Override
     public void stop() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
@@ -174,7 +174,7 @@ public class DefaultMediaController implements IMediaController {
 
     @Override
     public void attachView(AbstractControlView controlView) {
-
+        mControlView = controlView;
     }
 
     public IMediaPlayer createPlayer(int playerType) {
@@ -242,6 +242,20 @@ public class DefaultMediaController implements IMediaController {
         return mediaPlayer;
     }
 
+    public int getDuration() {
+        if (mStatus.isInPlaybackState()) {
+            return (int) mMediaPlayer.getDuration();
+        }
+
+        return -1;
+    }
+
+    public int getCurrentPosition() {
+        if (mStatus.isInPlaybackState()) {
+            return (int) mMediaPlayer.getCurrentPosition();
+        }
+        return 0;
+    }
 
     class Status {
 
@@ -280,6 +294,18 @@ public class DefaultMediaController implements IMediaController {
         public boolean isPlaying() {
             return mCurrentState == STATE_PLAYING;
         }
+
+        public boolean isInPlaybackState() {
+            return (mMediaPlayer != null &&
+                    mCurrentState != STATE_ERROR &&
+                    mCurrentState != STATE_IDLE &&
+                    mCurrentState != STATE_PREPARING);
+        }
+
+        public boolean isIdle() {
+            return mMediaPlayer != null &&
+                    mCurrentState != STATE_IDLE;
+        }
     }
 
     class StatusListener extends IMediaListener {
@@ -291,40 +317,49 @@ public class DefaultMediaController implements IMediaController {
 
         @Override
         public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
-            super.onBufferingUpdate(iMediaPlayer, i);
+            listener.onBufferingUpdate(iMediaPlayer, i);
         }
 
         @Override
         public void onCompletion(IMediaPlayer iMediaPlayer) {
-            super.onCompletion(iMediaPlayer);
+            mStatus.setCurrentState(Status.STATE_PLAYBACK_COMPLETED);
+            mStatus.setTargetState(Status.STATE_PLAYBACK_COMPLETED);
+            listener.onCompletion(iMediaPlayer);
         }
 
         @Override
         public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-            return super.onError(iMediaPlayer, i, i1);
+            mStatus.setCurrentState(Status.STATE_ERROR);
+            mStatus.setTargetState(Status.STATE_ERROR);
+            return listener.onError(iMediaPlayer, i, i1);
         }
 
         @Override
         public boolean onInfo(IMediaPlayer iMediaPlayer, int i, int i1) {
-            return super.onInfo(iMediaPlayer, i, i1);
+            return listener.onInfo(iMediaPlayer, i, i1);
         }
 
         @Override
         public void onPrepared(IMediaPlayer iMediaPlayer) {
             mStatus.setCurrentState(Status.STATE_PREPARED);
+            int seekToPosition = mSeekWhenPrepared;  // mSeekWhenPrepared may be changed after seekTo() call
+            if (seekToPosition != 0) {
+                seekTo(seekToPosition);
+            }
             listener.onPrepared(iMediaPlayer);
+            if (mControlView != null) {
+                mControlView.initSeekBar(getDuration());
+            }
         }
 
         @Override
         public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-            super.onSeekComplete(iMediaPlayer);
+            listener.onSeekComplete(iMediaPlayer);
         }
 
         @Override
         public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
-            super.onVideoSizeChanged(iMediaPlayer, i, i1, i2, i3);
+            listener.onVideoSizeChanged(iMediaPlayer, i, i1, i2, i3);
         }
     }
-
-    ;
 }

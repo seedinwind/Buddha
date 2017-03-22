@@ -5,8 +5,6 @@ import android.net.Uri;
 
 import java.util.Map;
 
-import tv.danmaku.ijk.media.player.IMediaPlayer;
-
 /**
  * Created by Yuan Jiwei on 17/3/15.
  */
@@ -21,11 +19,7 @@ public interface IMediaController {
 
     void pause();
 
-    void seekTo();
-
-    void release();
-
-    void reset();
+    void seekTo(int msec);
 
     void stop();
 
@@ -36,4 +30,8 @@ public interface IMediaController {
     boolean canStart();
 
     boolean isPlaying();
+
+    int getDuration();
+
+    int getCurrentPosition();
 }

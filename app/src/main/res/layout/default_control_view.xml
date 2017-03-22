@@ -26,14 +26,21 @@
         android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:background="@color/ijk_transparent_dark"
+        android:orientation="horizontal"
         tools:visibility="visible">
         <ImageButton
             android:id="@+id/iv_toggle"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:background="@color/transparent"
-            android:src="@mipmap/icon_play"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            android:src="@mipmap/icon_play"/>
+        <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/seek"
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:thumb="@mipmap/icon_thumb"/>
 
     </LinearLayout>
 

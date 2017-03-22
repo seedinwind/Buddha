@@ -1,17 +1,17 @@
 package org.buddha.wise.media.widget;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import org.buddha.wise.R;
 
@@ -31,6 +31,14 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private Uri mUri;
     private Map mHeaders;
 
+    private int mVideoWidth;
+    private int mVideoHeight;
+    private int mVideoSarNum;
+    private int mVideoSarDen;
+    private int mSurfaceWidth;
+    private int mSurfaceHeight;
+    private int mVideoRotationDegree;
+
     public VideoView(@NonNull Context context) {
         super(context);
         initView();
@@ -47,6 +55,11 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     }
 
     private void initView() {
+        mVideoWidth = 0;
+        mVideoHeight = 0;
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        requestFocus();
         addRenderView();
         addDefaultControllerView();
     }
@@ -134,8 +147,10 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         mMediaController.prepare();
     }
 
-    public void start() {
-        mMediaController.start();
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mMediaController.release(true);
     }
 
     public void playBackStop() {
@@ -145,18 +160,30 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private IMediaListener mStatusListener = new IMediaListener() {
         @Override
         public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
-            super.onBufferingUpdate(iMediaPlayer, i);
+            //TODO
         }
 
         @Override
         public void onCompletion(IMediaPlayer iMediaPlayer) {
-            super.onCompletion(iMediaPlayer);
+            mControllerView.show();
         }
 
         @Override
-        public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-            Toast.makeText(getContext(), "onError", Toast.LENGTH_SHORT).show();
-            return super.onError(iMediaPlayer, i, i1);
+        public boolean onError(IMediaPlayer iMediaPlayer, int framework_err, int impl_err) {
+            new AlertDialog.Builder(getContext())
+                    .setMessage("")
+                    .setPositiveButton(R.string.VideoView_error_button,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                            /* If we get here, there is no onError listener, so
+                                             * at least inform them that the video is over.
+                                             */
+
+                                }
+                            })
+                    .setCancelable(false)
+                    .show();
+            return true;
         }
 
         @Override
@@ -166,19 +193,28 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
 
         @Override
         public void onPrepared(IMediaPlayer iMediaPlayer) {
-            Toast.makeText(getContext(), "onPrepared", Toast.LENGTH_SHORT).show();
             mControllerView.show();
-            super.onPrepared(iMediaPlayer);
         }
 
         @Override
         public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-            super.onSeekComplete(iMediaPlayer);
+
         }
 
         @Override
-        public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
-            super.onVideoSizeChanged(iMediaPlayer, i, i1, i2, i3);
+        public void onVideoSizeChanged(IMediaPlayer mp, int i, int i1, int i2, int i3) {
+            mVideoWidth = mp.getVideoWidth();
+            mVideoHeight = mp.getVideoHeight();
+            mVideoSarNum = mp.getVideoSarNum();
+            mVideoSarDen = mp.getVideoSarDen();
+            if (mVideoWidth != 0 && mVideoHeight != 0) {
+                if (mRenderView != null) {
+                    mRenderView.setVideoSize(mVideoWidth, mVideoHeight);
+                    mRenderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+                }
+                // REMOVED: getHolder().setFixedSize(mVideoWidth, mVideoHeight);
+                requestLayout();
+            }
         }
     };
 
@@ -193,7 +229,16 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        mSurfaceWidth = width;
+        mSurfaceHeight = height;
+        boolean isValidState = mMediaController.isPlaying();
+        boolean hasValidSize = !mRenderView.shouldWaitForResize() || (mVideoWidth == width && mVideoHeight == height);
+//        if (mMediaController.hasPlayer() && isValidState && hasValidSize) {
+//            if (mSeekWhenPrepared != 0) {
+//                seekTo(mSeekWhenPrepared);
+//            }
+//            start();
+//        }
     }
 
     @Override
