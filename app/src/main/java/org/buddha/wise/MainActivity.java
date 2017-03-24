@@ -3,18 +3,19 @@ package org.buddha.wise;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import org.buddha.wise.unpack.yd.Util;
 import org.buddha.wise.vedio.TestVideo;
-import org.buddha.wise.vedio.VideoActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,7 +45,19 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        String name = Util.createGuest();
+        String password = Util.createCoded(name.toLowerCase(), name);
+        String secret = Util.createCoded(name.toLowerCase(), "yidian");
+        Log.e("yidian--name", name);
+        Log.e("yidian--password", password);
+        Log.e("yidian--secret", secret);
+        String log = "http://a1.go2yd.com/Website/user/login-as-guest?platform=1&deviceId=&password=5f052799d5124c4e13aa47a63384d306c6f1e9d8&cv=&secret=1da24d87b27a6dbcb1fa4174174a3cf6bce32f44&username=HG_6848e7cb-eed5-416f-842c-879c2da352a7&token=&distribution=&appid=yidian&autoStartup=&version=020118&net=wifi";
+        String channel = "https://118.26.223.139/Website/channel/news-list-for-channel?platform=1&cv=3.9.2.0&fields=docid&fields=date&fields=image&fields=image_urls&fields=like&fields=source&fields=title&fields=url&fields=comment_count&fields=up&fields=down&cend=50&infinite=true&distribution=vivo1&refresh=1&appid=yidian&channel_id=11410718704&cstart=0&group_fromid=g181&version=020118&ad_version=010935&net=wifi";
+        String search_channel = "https://118.26.223.139/Website/channel/search-channel?platform=1&appid=yidian&word=%E4%BD%9B%E6%95%99&cv=3.9.2.0&group_id=100762069024&group_fromid=g181&distribution=vivo1&version=020118&net=wifi";
+        String dingyue = "https://118.26.223.139/Website/channel/create?platform=1&appid=yidian&cv=3.9.2.0&distribution=vivo1&version=020118&net=wifi";
+        String content="https://118.26.223.139/Website/contents/content?platform=1&cv=3.9.2.0&related_navigations=true&distribution=vivo1&appid=yidian&related_docs=true&bottom_channels=true&related_wemedia=true&docid=0Fr873h4&vertical_card=true&version=020118&net=wifi";
     }
+
 
     @Override
     public void onBackPressed() {

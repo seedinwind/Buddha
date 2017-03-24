@@ -39,6 +39,16 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private int mSurfaceHeight;
     private int mVideoRotationDegree;
 
+    private static final int[] s_allAspectRatio = {
+            org.buddha.wise.media.IRenderView.AR_ASPECT_FIT_PARENT,
+            org.buddha.wise.media.IRenderView.AR_ASPECT_FILL_PARENT,
+            org.buddha.wise.media.IRenderView.AR_ASPECT_WRAP_CONTENT,
+            // IRenderView.AR_MATCH_PARENT,
+            org.buddha.wise.media.IRenderView.AR_16_9_FIT_PARENT,
+            org.buddha.wise.media.IRenderView.AR_4_3_FIT_PARENT};
+    private int mCurrentAspectRatioIndex = 0;
+    private int mCurrentAspectRatio = s_allAspectRatio[4];
+
     public VideoView(@NonNull Context context) {
         super(context);
         initView();
@@ -74,6 +84,7 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
                 mControllerView.show();
             }
         });
+        mRenderView.setAspectRatio(mCurrentAspectRatio);
     }
 
     private IRenderView createRenderView() {
@@ -160,7 +171,6 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
     private IMediaListener mStatusListener = new IMediaListener() {
         @Override
         public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
-            //TODO
         }
 
         @Override
@@ -207,14 +217,14 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
             mVideoHeight = mp.getVideoHeight();
             mVideoSarNum = mp.getVideoSarNum();
             mVideoSarDen = mp.getVideoSarDen();
-            if (mVideoWidth != 0 && mVideoHeight != 0) {
-                if (mRenderView != null) {
-                    mRenderView.setVideoSize(mVideoWidth, mVideoHeight);
-                    mRenderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
-                }
-                // REMOVED: getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-                requestLayout();
-            }
+//            if (mVideoWidth != 0 && mVideoHeight != 0) {
+//                if (mRenderView != null) {
+//                    mRenderView.setVideoSize(mVideoWidth, mVideoHeight);
+//                    mRenderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+//                }
+//                // REMOVED: getHolder().setFixedSize(mVideoWidth, mVideoHeight);
+//                requestLayout();
+//            }
         }
     };
 
@@ -233,12 +243,13 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         mSurfaceHeight = height;
         boolean isValidState = mMediaController.isPlaying();
         boolean hasValidSize = !mRenderView.shouldWaitForResize() || (mVideoWidth == width && mVideoHeight == height);
-//        if (mMediaController.hasPlayer() && isValidState && hasValidSize) {
+        if (mMediaController.hasPlayer() && isValidState && hasValidSize) {
 //            if (mSeekWhenPrepared != 0) {
 //                seekTo(mSeekWhenPrepared);
 //            }
-//            start();
-//        }
+            mMediaController.start();
+
+        }
     }
 
     @Override

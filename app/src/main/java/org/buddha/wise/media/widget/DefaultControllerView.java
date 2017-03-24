@@ -90,7 +90,7 @@ public class DefaultControllerView extends AbstractControlView implements View.O
                             public void run() {
                                 hide();
                             }
-                        }, 500);
+                        }, 1500);
 
                     } else if (mMediaController.isPlaying()) {
                         mMediaController.pause();
@@ -100,7 +100,7 @@ public class DefaultControllerView extends AbstractControlView implements View.O
                             public void run() {
                                 hide();
                             }
-                        }, 500);
+                        }, 1500);
                     }
                 }
         }
@@ -121,5 +121,11 @@ public class DefaultControllerView extends AbstractControlView implements View.O
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         mMediaController.seekTo(mCurrentProgress);
+        mRoot.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hide();
+            }
+        }, 1500);
     }
 }

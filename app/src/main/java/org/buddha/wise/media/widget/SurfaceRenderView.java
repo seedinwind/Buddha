@@ -13,17 +13,25 @@ import android.view.View;
 
 public class SurfaceRenderView extends SurfaceView implements IRenderView {
     private RenderTouchListener mToucherListener;
+    private MeasureHelper mMeasureHelper;
 
     public SurfaceRenderView(Context context) {
         super(context);
+        init();
     }
 
     public SurfaceRenderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public SurfaceRenderView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        mMeasureHelper = new MeasureHelper(this);
     }
 
     @Override
@@ -33,17 +41,24 @@ public class SurfaceRenderView extends SurfaceView implements IRenderView {
 
     @Override
     public boolean shouldWaitForResize() {
-        return false;
+        return true;
     }
 
     @Override
     public void setVideoSize(int videoWidth, int videoHeight) {
-
+        if (videoWidth > 0 && videoHeight > 0) {
+            mMeasureHelper.setVideoSize(videoWidth, videoHeight);
+            getHolder().setFixedSize(videoWidth, videoHeight);
+            requestLayout();
+        }
     }
 
     @Override
     public void setVideoSampleAspectRatio(int videoSarNum, int videoSarDen) {
-
+        if (videoSarNum > 0 && videoSarDen > 0) {
+            mMeasureHelper.setVideoSampleAspectRatio(videoSarNum, videoSarDen);
+            requestLayout();
+        }
     }
 
     @Override
@@ -53,7 +68,8 @@ public class SurfaceRenderView extends SurfaceView implements IRenderView {
 
     @Override
     public void setAspectRatio(int aspectRatio) {
-
+        mMeasureHelper.setAspectRatio(aspectRatio);
+        requestLayout();
     }
 
     @Override
