@@ -12,7 +12,6 @@ import android.view.View;
  */
 
 public class SurfaceRenderView extends SurfaceView implements IRenderView {
-    private RenderTouchListener mToucherListener;
     private MeasureHelper mMeasureHelper;
 
     public SurfaceRenderView(Context context) {
@@ -77,24 +76,4 @@ public class SurfaceRenderView extends SurfaceView implements IRenderView {
         return getHolder();
     }
 
-    @Override
-    public void setOnTouchListener(RenderTouchListener listener) {
-        mToucherListener = listener;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mToucherListener.onTouch();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
-            default:
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
 }

@@ -17,6 +17,8 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 
+import static org.buddha.wise.media.widget.DefaultMediaController.Status.STATE_ERROR;
+
 /**
  * Created by Yuan Jiwei on 17/3/16.
  */
@@ -46,14 +48,15 @@ public class DefaultMediaController implements IMediaController {
             mMediaPlayer = createPlayer(0);
             attachStatusListener();
             setDataSource(context, uri, headers);
+            mSeekWhenPrepared = 0;
         } catch (IOException e) {
-            mStatus.setTargetState(Status.STATE_ERROR);
-            mStatus.setCurrentState(Status.STATE_ERROR);
+            mStatus.setTargetState(STATE_ERROR);
+            mStatus.setCurrentState(STATE_ERROR);
             if (mMediaListener != null)
                 mMediaListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
         } catch (IllegalArgumentException ex) {
-            mStatus.setTargetState(Status.STATE_ERROR);
-            mStatus.setCurrentState(Status.STATE_ERROR);
+            mStatus.setTargetState(STATE_ERROR);
+            mStatus.setCurrentState(STATE_ERROR);
             if (mMediaListener != null)
                 mMediaListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
         } finally {
@@ -159,6 +162,13 @@ public class DefaultMediaController implements IMediaController {
         return mStatus.isPlaying();
     }
 
+    public boolean isInPlaybackState() {
+        return   (mMediaPlayer != null &&
+                mStatus.getCurrentState() != Status.STATE_ERROR &&
+                mStatus.getCurrentState() != Status.STATE_IDLE &&
+                mStatus.getCurrentState() != Status.STATE_PREPARING);
+    }
+
     @Override
     public void stop() {
         if (mMediaPlayer != null) {
@@ -170,6 +180,12 @@ public class DefaultMediaController implements IMediaController {
             AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
             am.abandonAudioFocus(null);
         }
+    }
+
+    @Override
+    public void releaseWithoutStop() {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setDisplay(null);
     }
 
     @Override

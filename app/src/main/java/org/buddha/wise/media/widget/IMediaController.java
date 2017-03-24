@@ -21,11 +21,14 @@ public interface IMediaController {
 
     void seekTo(int msec);
 
+
     void stop();
 
     void attachView(AbstractControlView controlView);
 
     void release(boolean b);
+
+    void releaseWithoutStop();
 
     boolean canStart();
 
@@ -34,4 +37,6 @@ public interface IMediaController {
     int getDuration();
 
     int getCurrentPosition();
+
+    boolean isInPlaybackState();
 }

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -78,13 +79,6 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
         mRenderView = createRenderView();
         mRenderView.getSurfaceHolder().addCallback(this);
         addView(mRenderView.getView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mRenderView.setOnTouchListener(new IRenderView.RenderTouchListener() {
-            @Override
-            public void onTouch() {
-                mControllerView.show();
-            }
-        });
-        mRenderView.setAspectRatio(mCurrentAspectRatio);
     }
 
     private IRenderView createRenderView() {
@@ -257,4 +251,19 @@ public class VideoView extends FrameLayout implements SurfaceHolder.Callback {
 
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mMediaController.isInPlaybackState() ) {
+            toggleMediaControlsVisiblity();
+        }
+        return false;
+    }
+
+    private void toggleMediaControlsVisiblity() {
+        if (mControllerView.isShowing()) {
+            mControllerView.hide();
+        } else {
+            mControllerView.show();
+        }
+    }
 }
