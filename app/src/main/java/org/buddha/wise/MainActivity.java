@@ -9,19 +9,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.alibaba.fastjson.JSONObject;
-import com.xiaohujr.credit.sdk.net.entity.collections.ParamMapBuilder;
-import com.xiaohujr.credit.sdk.net.net.LogicRequest;
-import com.xiaohujr.credit.sdk.net.net.RequestMethod;
-import com.xiaohujr.credit.sdk.net.net.SydHttpError;
-import com.xiaohujr.credit.sdk.net.net.handle.ResponseHandler;
-
-import org.buddha.wise.unpack.yd.Util;
+import org.buddha.wise.unpack.yd.YDMainActivity;
+import org.buddha.wise.utils.SharePreferencesUtil;
 import org.buddha.wise.vedio.TestVideo;
 
 public class MainActivity extends AppCompatActivity
@@ -31,6 +24,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharePreferencesUtil.init(this.getApplicationContext());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -38,7 +32,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, TestVideo.class));
+                startActivity(new Intent(MainActivity.this, YDMainActivity.class));
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
@@ -52,51 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        String name = Util.createGuest();
-        String password = Util.createCoded(name.toLowerCase(), name);
-        String secret = Util.createCoded(name.toLowerCase(), "yidian");
-        Log.e("yidian--name", name);
-        Log.e("yidian--password", password);
-        Log.e("yidian--secret", secret);
-        String url = "http://a1.go2yd.com/Website/user/login-as-guest?"
-                + "platform=1"
-                + "&deviceId="
-                + "&cv="
-                + "&token="
-                + "&distribution="
-                + "&autoStartup="
-                + "&appid=yidian"
-                + "&version=020118"
-                + "&net=wifi"
-                + "&username=" + name
-                + "&password=" + password
-                + "&secret=" + secret;
-        new MyRequest().url(url)
-                .method(RequestMethod.POST)
-//                .postParams(new ParamMapBuilder()
-//                .putValue("platform","1")
-//                .putValue("deviceId","")
-//                .putValue("cv","")
-//                .putValue("token","")
-//                .putValue("distribution","")
-//                .putValue("autoStartup","")
-//                .putValue("appid","yidian")
-//                .putValue("version","020118")
-//                .putValue("net","wifi")
-//                .putValue("username",name)
-//                .putValue("password",password)
-//                .putValue("secret",secret))
-                .post(new ResponseHandler<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        Log.e("Json", jsonObject.toJSONString());
-                    }
 
-                    @Override
-                    public void onFail(SydHttpError sydHttpError) {
-
-                    }
-                });
         String log = "http://a1.go2yd.com/Website/user/login-as-guest?platform=1&deviceId=&password=5f052799d5124c4e13aa47a63384d306c6f1e9d8&cv=&secret=1da24d87b27a6dbcb1fa4174174a3cf6bce32f44&username=HG_6848e7cb-eed5-416f-842c-879c2da352a7&token=&distribution=&appid=yidian&autoStartup=&version=020118&net=wifi";
         String channel = "https://118.26.223.139/Website/channel/news-list-for-channel?platform=1&cv=3.9.2.0&fields=docid&fields=date&fields=image&fields=image_urls&fields=like&fields=source&fields=title&fields=url&fields=comment_count&fields=up&fields=down&cend=50&infinite=true&distribution=vivo1&refresh=1&appid=yidian&channel_id=11410718704&cstart=0&group_fromid=g181&version=020118&ad_version=010935&net=wifi";
         String search_channel = "https://118.26.223.139/Website/channel/search-channel?platform=1&appid=yidian&word=%E4%BD%9B%E6%95%99&cv=3.9.2.0&group_id=100762069024&group_fromid=g181&distribution=vivo1&version=020118&net=wifi";
