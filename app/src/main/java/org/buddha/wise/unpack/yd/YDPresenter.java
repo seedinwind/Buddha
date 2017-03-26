@@ -1,6 +1,7 @@
 package org.buddha.wise.unpack.yd;
 
 
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -70,6 +71,15 @@ class YDPresenter implements YDContract.Presenter {
     @Override
     public void getDefaultChannels(List<YDChannel> channels) {
         mViews.setTab(channels);
+
     }
 
+    public YDChannel getTabChannel(int position) {
+        String channels = SharePreferencesUtil.getInstance().get("yd_channel");
+        if (!TextUtils.isEmpty(channels)) {
+            List<YDChannel> channel= JSON.parseArray(channels, YDChannel.class);
+            return channel.get(position);
+        }
+        return null;
+    }
 }
