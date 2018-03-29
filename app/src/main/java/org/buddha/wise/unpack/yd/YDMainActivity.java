@@ -1,6 +1,5 @@
 package org.buddha.wise.unpack.yd;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -8,14 +7,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.buddha.wise.R;
+import org.buddha.wise.net.RetrofitClient;
 import org.buddha.wise.utils.SharePreferencesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Yuan Jiwei on 17/3/25.
@@ -55,7 +64,37 @@ public class YDMainActivity extends FragmentActivity implements YDContract.View 
             }
         });
         mPresenter = new YDPresenter(this);
-        mPresenter.loginAsGuest();
+        RetrofitClient.INSTANCE.getYidianService().login()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .flatMap(new io.reactivex.functions.Function<YdLogin, ObservableSource<YDChannel>>() {
+                    @Override
+                    public ObservableSource<YDChannel> apply(YdLogin ydLogin) throws Exception {
+                        return RetrofitClient.INSTANCE.getYidianService().getChannels();
+                    }
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<YDChannel>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(YDChannel ydChannel) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
         initTab();
     }
 

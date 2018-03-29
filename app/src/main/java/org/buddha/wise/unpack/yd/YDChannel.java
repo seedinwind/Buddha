@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Yuan Jiwei on 17/3/25.
  */
 
-class YDChannel implements Serializable {
+public class YDChannel implements Serializable {
     private String id;
     private String docid;
     private String icon;
