@@ -12,7 +12,16 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.buddha.wise.MainActivity"
     tools:showIn="@layout/app_bar_main">
+    <TextView
+        android:id="@+id/entrance_ssyd"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#24000000"
+        android:gravity="center"
+        android:text="@string/vedio_shishanyedao_jingkongmaster"/>
+
     <android.support.design.widget.TabLayout
+        android:layout_below="@+id/entrance_ssyd"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </android.support.design.widget.TabLayout>

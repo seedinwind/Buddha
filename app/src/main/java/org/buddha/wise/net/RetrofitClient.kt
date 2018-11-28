@@ -27,8 +27,4 @@ object RetrofitClient {
                 .build()
     }
 
-    fun getYidianService(): YidianService {
-        return getClient().create(YidianService::class.java)
-    }
-
 }

@@ -22,13 +22,12 @@
         </activity>
         <activity
             android:name=".vedio.VideoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity
             android:name=".vedio.TestVideo"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity
-            android:name=".unpack.yd.YDMainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".vedio.SSYDListActivity" />
     </application>
 
 </manifest>
